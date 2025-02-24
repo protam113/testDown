@@ -1,4 +1,5 @@
 // components/DownloadButton.tsx
+"use client";
 import React, { useState } from "react";
 
 const DownloadButton: React.FC = () => {
