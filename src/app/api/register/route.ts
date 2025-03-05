@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectMongoDB from '../../../utils/mongoConnect';
 import User from '@/model/User';
 
+export async function OPTIONS() {
+  return NextResponse.json({}, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     console.log('🚀 Bắt đầu quá trình đăng ký');
@@ -23,7 +33,7 @@ export async function POST(request: NextRequest) {
           message: 'Dữ liệu không hợp lệ',
           error: parseError instanceof Error ? parseError.message : 'Lỗi không xác định'
         }, 
-        { status: 400 }
+        { status: 400, headers: { "Access-Control-Allow-Origin": "*" } }
       );
     }
 
@@ -37,7 +47,7 @@ export async function POST(request: NextRequest) {
           success: false, 
           message: 'Vui lòng nhập đầy đủ username và password' 
         }, 
-        { status: 400 }
+        { status: 400, headers: { "Access-Control-Allow-Origin": "*" } }
       );
     }
 
@@ -50,7 +60,7 @@ export async function POST(request: NextRequest) {
           success: false, 
           message: 'Username đã tồn tại' 
         }, 
-        { status: 400 }
+        { status: 400, headers: { "Access-Control-Allow-Origin": "*" } }
       );
     }
 
@@ -64,11 +74,9 @@ export async function POST(request: NextRequest) {
       { 
         success: true,
         message: 'Đăng ký thành công',
-        user: { 
-          username: newUser.username 
-        } 
+        user: { username: newUser.username }
       }, 
-      { status: 201 }
+      { status: 201, headers: { "Access-Control-Allow-Origin": "*" } }
     );
   } catch (error) {
     console.error('❌ Lỗi đăng ký chi tiết:', error);
@@ -78,7 +86,7 @@ export async function POST(request: NextRequest) {
         message: 'Lỗi máy chủ',
         error: error instanceof Error ? error.message : 'Lỗi không xác định'
       }, 
-      { status: 500 }
+      { status: 500, headers: { "Access-Control-Allow-Origin": "*" } }
     );
   }
 }
