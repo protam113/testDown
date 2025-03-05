@@ -1,72 +1,73 @@
-"use client";
+// pages/index.tsx
+import { useState, FormEvent } from "react";
 
-import { useAuthStore } from "@/store/authStore";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+export default function Login() {
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [message, setMessage] = useState<string>("");
 
-export function LoginForm() {
-  const { login } = useAuthStore();
-  const router = useRouter();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
     try {
-      await login(username, password);
-      //   router.push('/'); // Redirect to the Dashboard after successful login
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data: { message: string } = await res.json();
+      setMessage(data.message);
+
+      if (res.status === 201) {
+        setUsername("");
+        setPassword("");
+      }
     } catch {
-      console.error("Sai Tên Đăng Nhập Hoặc Mật Khẩu!");
+      setMessage("Error occurred during registration");
     }
   };
 
   return (
-    <div>
-      <div>
-        <form onSubmit={handleSubmit}>
-          <div className="grid gap-6">
-            <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-              <span className="relative z-10 bg-background px-2 text-muted-foreground">
-                Or continue with
-              </span>
-            </div>
-            <div className="grid gap-6">
-              <div className="grid gap-2">
-                <p>Email</p>
-                <input
-                  id="username"
-                  type="username"
-                  placeholder="Enter your username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <div className="flex items-center">
-                  <p>Password</p>
-                  {/* <a
-                      href="#"
-                      className="ml-auto text-sm underline-offset-4 hover:underline"
-                    >
-                      Forgot your password?
-                    </a> */}
-                </div>
-                <input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-              <button type="submit" className="w-full">
-                Login
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
+    <div style={{ maxWidth: "400px", margin: "50px auto" }}>
+      <h1>Đăng ký</h1>
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: "15px" }}>
+          <label htmlFor="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+          />
+        </div>
+        <div style={{ marginBottom: "15px" }}>
+          <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+          />
+        </div>
+        <button
+          type="submit"
+          style={{
+            padding: "10px 20px",
+            background: "#0070f3",
+            color: "white",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Đăng ký
+        </button>
+      </form>
+      {message && <p style={{ marginTop: "15px" }}>{message}</p>}
     </div>
   );
 }
